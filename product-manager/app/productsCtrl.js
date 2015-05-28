@@ -1,15 +1,15 @@
 app.controller('productsCtrl', function ($scope, $modal, $filter, Data) {
     $scope.product = {};
-    Data.get('products').then(function(data){
+    Data.get('cars').then(function(data){
         $scope.products = data.data;
     });
     $scope.changeProductStatus = function(product){
         product.status = (product.status=="Active" ? "Inactive" : "Active");
-        Data.put("products/"+product.id,{status:product.status});
+        Data.put("cars/"+product.id,{status:product.status});
     };
     $scope.deleteProduct = function(product){
         if(confirm("Are you sure to remove the product")){
-            Data.delete("products/"+product.id).then(function(result){
+            Data.delete("cars/"+product.id).then(function(result){
                 $scope.products = _.without($scope.products, _.findWhere($scope.products, {id:product.id}));
             });
         }
@@ -28,7 +28,7 @@ app.controller('productsCtrl', function ($scope, $modal, $filter, Data) {
         modalInstance.result.then(function(selectedObject) {
             if(selectedObject.save == "insert"){
                 $scope.products.push(selectedObject);
-                $scope.products = $filter('orderBy')($scope.products, 'id', 'reverse');
+                $scope.products = $filter('orderBy')($scope.products, 'carID', 'reverse');
             }else if(selectedObject.save == "update"){
                 p.description = selectedObject.description;
                 p.price = selectedObject.price;
@@ -39,12 +39,13 @@ app.controller('productsCtrl', function ($scope, $modal, $filter, Data) {
     };
     
  $scope.columns = [
-                    {text:"ID",predicate:"id",sortable:true,dataType:"number"},
-                    {text:"Name",predicate:"name",sortable:true},
-                    {text:"Price",predicate:"price",sortable:true},
-                    {text:"Stock",predicate:"stock",sortable:true},
-                    {text:"Packing",predicate:"packing",reverse:true,sortable:true,dataType:"number"},
-                    {text:"Description",predicate:"description",sortable:true},
+                    {text:"ID",predicate:"carID",sortable:true,dataType:"number"},
+                    {text:"Type",predicate:"carType",sortable:true},
+                    {text:"SPZ",predicate:"carSPZ",sortable:true},
+                    {text:"Insurance",predicate:"carInsurance",sortable:true},
+                    {text:"Price",predicate:"carPrice",reverse:true,sortable:true,dataType:"number"},
+                    {text:"Date",predicate:"carDate",sortable:true},
+                    {text:"Description",predicate:"carDescription",sortable:true},
                     {text:"Status",predicate:"status",sortable:true},
                     {text:"Action",predicate:"",sortable:false}
                 ];
@@ -69,7 +70,7 @@ app.controller('productEditCtrl', function ($scope, $modalInstance, item, Data) 
         $scope.saveProduct = function (product) {
             product.uid = $scope.uid;
             if(product.id > 0){
-                Data.put('products/'+product.id, product).then(function (result) {
+                Data.put('cars/'+product.id, product).then(function (result) {
                     if(result.status != 'error'){
                         var x = angular.copy(product);
                         x.save = 'update';
@@ -80,7 +81,7 @@ app.controller('productEditCtrl', function ($scope, $modalInstance, item, Data) 
                 });
             }else{
                 product.status = 'Active';
-                Data.post('products', product).then(function (result) {
+                Data.post('cars', product).then(function (result) {
                     if(result.status != 'error'){
                         var x = angular.copy(product);
                         x.save = 'insert';
